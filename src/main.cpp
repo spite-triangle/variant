@@ -122,7 +122,7 @@ TEST_CASE("four operator"){
     CHECK_EQ(var3.Get<int>(), 5);
 }
 
-TEST_CASE("bool operator"){
+TEST_CASE("compare operator"){
     Variant var1;
     Variant var2;
 

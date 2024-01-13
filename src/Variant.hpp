@@ -97,19 +97,19 @@ public:
     HANDLE_FOUR_OPERATOR_NULL(/, OperatorDivideImpl)
     HANDLE_FOUR_OPERATOR_NULL(*, OperatorMultiImpl)
 
-    /* 布尔运算 */
-    #define HANDLE_BOOL_OPERATOR_NULL(symbol, name) \
+    /* 比较运算 */
+    #define HANDLE_COMPARE_OPERATOR_NULL(symbol, name) \
         template<class T>\
         inline static bool name(const void * pA, const void * pB)\
         {\
             return false; \
         }
-    HANDLE_BOOL_OPERATOR_NULL(==, OperatorEqualImpl)
-    HANDLE_BOOL_OPERATOR_NULL(!=, OperatorNonequalImpl)
-    HANDLE_BOOL_OPERATOR_NULL(<, OperatorLessImpl)
-    HANDLE_BOOL_OPERATOR_NULL(>, OperatorGreatImpl)
-    HANDLE_BOOL_OPERATOR_NULL(<=, OperatorLessEqualImpl)
-    HANDLE_BOOL_OPERATOR_NULL(>=, OperatorGreatEqualImpl)
+    HANDLE_COMPARE_OPERATOR_NULL(==, OperatorEqualImpl)
+    HANDLE_COMPARE_OPERATOR_NULL(!=, OperatorNonequalImpl)
+    HANDLE_COMPARE_OPERATOR_NULL(<, OperatorLessImpl)
+    HANDLE_COMPARE_OPERATOR_NULL(>, OperatorGreatImpl)
+    HANDLE_COMPARE_OPERATOR_NULL(<=, OperatorLessEqualImpl)
+    HANDLE_COMPARE_OPERATOR_NULL(>=, OperatorGreatEqualImpl)
 
 };
 
@@ -148,19 +148,19 @@ public:
     HANDLE_FOUR_OPERATOR(*, OperatorMultiImpl)
 
 
-    /* 布尔运算 */
-    #define HANDLE_BOOL_OPERATOR(symbol, name) \
+    /* 比较运算 */
+    #define HANDLE_COMPARE_OPERATOR(symbol, name) \
         template<class T>\
         inline static bool name(const void * pA, const void * pB)\
         {\
             return *((const T*)pA) symbol *((const T*)pB); \
         }
-    HANDLE_BOOL_OPERATOR(==, OperatorEqualImpl)
-    HANDLE_BOOL_OPERATOR(!=, OperatorNonequalImpl)
-    HANDLE_BOOL_OPERATOR(<, OperatorLessImpl)
-    HANDLE_BOOL_OPERATOR(>, OperatorGreatImpl)
-    HANDLE_BOOL_OPERATOR(<=, OperatorLessEqualImpl)
-    HANDLE_BOOL_OPERATOR(>=, OperatorGreatEqualImpl)
+    HANDLE_COMPARE_OPERATOR(==, OperatorEqualImpl)
+    HANDLE_COMPARE_OPERATOR(!=, OperatorNonequalImpl)
+    HANDLE_COMPARE_OPERATOR(<, OperatorLessImpl)
+    HANDLE_COMPARE_OPERATOR(>, OperatorGreatImpl)
+    HANDLE_COMPARE_OPERATOR(<=, OperatorLessEqualImpl)
+    HANDLE_COMPARE_OPERATOR(>=, OperatorGreatEqualImpl)
 
 };
 
@@ -176,8 +176,8 @@ using FcnAssignment = void(const void * pSrc, void * pDest);
 // 运算符函数
 using FcnFourOperator = void(const void * pA, const void * pB, void * pRes);
 
-// 布尔运算
-using FcnBoolOperator = bool(const void * pA, const void * pB);
+// 比较运算
+using FcnCompareOperator = bool(const void * pA, const void * pB);
 
 // 字符输出
 using FcnFormatString = std::string(const void * pData);
@@ -224,7 +224,7 @@ public:
         m_mapOperatorMulti.at(id)(pA, pB, pRes);
     }
 
-    /* 布尔运算 */
+    /* 比较运算 */
     static bool operatorEqual(const type_index & id, const void * pA, const void * pB){
         if(m_mapOperatorEqual.count(id) <= 0) printf("Not found equal function of type %s\n", id.name());
         return m_mapOperatorEqual.at(id)(pA, pB);
@@ -269,12 +269,12 @@ private:
     VARIANTHELPER_HANDLE_MAP_DECLARE(FcnFourOperator,m_mapOperatorMinus); // 减法
     VARIANTHELPER_HANDLE_MAP_DECLARE(FcnFourOperator,m_mapOperatorDivide); //  除法
     VARIANTHELPER_HANDLE_MAP_DECLARE(FcnFourOperator,m_mapOperatorMulti); //  乘法
-    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnBoolOperator,m_mapOperatorEqual); //  相等
-    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnBoolOperator,m_mapOperatorNonequal); //  不相等
-    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnBoolOperator,m_mapOperatorLess); //  小于
-    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnBoolOperator,m_mapOperatorGreat); //  大于
-    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnBoolOperator,m_mapOperatorGE); //  大于等于
-    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnBoolOperator,m_mapOperatorLE); //  小于等于
+    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnCompareOperator,m_mapOperatorEqual); //  相等
+    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnCompareOperator,m_mapOperatorNonequal); //  不相等
+    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnCompareOperator,m_mapOperatorLess); //  小于
+    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnCompareOperator,m_mapOperatorGreat); //  大于
+    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnCompareOperator,m_mapOperatorGE); //  大于等于
+    VARIANTHELPER_HANDLE_MAP_DECLARE(FcnCompareOperator,m_mapOperatorLE); //  小于等于
 
     VARIANTHELPER_HANDLE_MAP_DECLARE(FcnFormatString,m_mapFormatString); // 字符串输出
 };
@@ -290,12 +290,12 @@ VARIANTHELPER_HANDLE_MAP_DEFINE(FcnFourOperator,m_mapOperatorAdd, HandleFunction
 VARIANTHELPER_HANDLE_MAP_DEFINE(FcnFourOperator,m_mapOperatorMinus, HandleFunctionImpl<has_operator_minus<Types>::value>::OperatorMinusImpl<Types>); // 减法
 VARIANTHELPER_HANDLE_MAP_DEFINE(FcnFourOperator,m_mapOperatorDivide, HandleFunctionImpl<has_operator_divide<Types>::value>::OperatorDivideImpl<Types>); //  除法
 VARIANTHELPER_HANDLE_MAP_DEFINE(FcnFourOperator,m_mapOperatorMulti, HandleFunctionImpl<has_operator_multi<Types>::value>::OperatorMultiImpl<Types>); //  乘法
-VARIANTHELPER_HANDLE_MAP_DEFINE(FcnBoolOperator,m_mapOperatorEqual, HandleFunctionImpl<has_operator_equal<Types>::value>::OperatorEqualImpl<Types>); //  相等
-VARIANTHELPER_HANDLE_MAP_DEFINE(FcnBoolOperator,m_mapOperatorNonequal, HandleFunctionImpl<has_operator_nonequal<Types>::value>::OperatorNonequalImpl<Types>); //  相等
-VARIANTHELPER_HANDLE_MAP_DEFINE(FcnBoolOperator,m_mapOperatorLess, HandleFunctionImpl<has_operator_less<Types>::value>::OperatorLessImpl<Types>); //  小于
-VARIANTHELPER_HANDLE_MAP_DEFINE(FcnBoolOperator,m_mapOperatorGreat, HandleFunctionImpl<has_operator_great<Types>::value>::OperatorGreatImpl<Types>); //  大于
-VARIANTHELPER_HANDLE_MAP_DEFINE(FcnBoolOperator,m_mapOperatorGE, HandleFunctionImpl<has_operator_GE<Types>::value>::OperatorLessEqualImpl<Types>); //  大于等于
-VARIANTHELPER_HANDLE_MAP_DEFINE(FcnBoolOperator,m_mapOperatorLE, HandleFunctionImpl<has_operator_LE<Types>::value>::OperatorGreatEqualImpl<Types>); //  小于等于
+VARIANTHELPER_HANDLE_MAP_DEFINE(FcnCompareOperator,m_mapOperatorEqual, HandleFunctionImpl<has_operator_equal<Types>::value>::OperatorEqualImpl<Types>); //  相等
+VARIANTHELPER_HANDLE_MAP_DEFINE(FcnCompareOperator,m_mapOperatorNonequal, HandleFunctionImpl<has_operator_nonequal<Types>::value>::OperatorNonequalImpl<Types>); //  相等
+VARIANTHELPER_HANDLE_MAP_DEFINE(FcnCompareOperator,m_mapOperatorLess, HandleFunctionImpl<has_operator_less<Types>::value>::OperatorLessImpl<Types>); //  小于
+VARIANTHELPER_HANDLE_MAP_DEFINE(FcnCompareOperator,m_mapOperatorGreat, HandleFunctionImpl<has_operator_great<Types>::value>::OperatorGreatImpl<Types>); //  大于
+VARIANTHELPER_HANDLE_MAP_DEFINE(FcnCompareOperator,m_mapOperatorGE, HandleFunctionImpl<has_operator_GE<Types>::value>::OperatorLessEqualImpl<Types>); //  大于等于
+VARIANTHELPER_HANDLE_MAP_DEFINE(FcnCompareOperator,m_mapOperatorLE, HandleFunctionImpl<has_operator_LE<Types>::value>::OperatorGreatEqualImpl<Types>); //  小于等于
 
 /* 变量格式化为字符串 */
 template <class... Types> 
@@ -432,8 +432,8 @@ public:
     VARIANT_FOUR_OPERATOR(/, operatorDivide)
     VARIANT_FOUR_OPERATOR(*, operatorMulti)
 
-    /* 布尔运算 */
-    #define VARIANT_BOOL_OPERATOR(symbol, fcn) \
+    /* 比较运算 */
+    #define VARIANT_COMPARE_OPERATOR(symbol, fcn) \
         template <class T,\
                 class = typename std::enable_if<Contains<typename std::remove_reference<T>::type, Types...>::value>::type>\
         bool operator##symbol(const T & other) const {\
@@ -448,12 +448,12 @@ public:
             } \
             return Helper::fcn(m_typeIndex, &m_data, &other.m_data);\
         }
-    VARIANT_BOOL_OPERATOR(==, operatorEqual)
-    VARIANT_BOOL_OPERATOR(!=, operatorNonequal)
-    VARIANT_BOOL_OPERATOR(<, operatorLess)
-    VARIANT_BOOL_OPERATOR(>, operatorGreat)
-    VARIANT_BOOL_OPERATOR(>=, operatorGE)
-    VARIANT_BOOL_OPERATOR(<=, operatorLE)
+    VARIANT_COMPARE_OPERATOR(==, operatorEqual)
+    VARIANT_COMPARE_OPERATOR(!=, operatorNonequal)
+    VARIANT_COMPARE_OPERATOR(<, operatorLess)
+    VARIANT_COMPARE_OPERATOR(>, operatorGreat)
+    VARIANT_COMPARE_OPERATOR(>=, operatorGE)
+    VARIANT_COMPARE_OPERATOR(<=, operatorLE)
 
 
     /* 成员函数 */
